@@ -22,13 +22,20 @@ TempI2C_LM75::TempI2C_LM75( uint8_t i2c_addr, Resolution resolution)
 //-------------------------------------------------------------------------------
 float TempI2C_LM75::getTemp()
 {
-    return(int(getReg(temp_reg)) / 256.0F);
+    union
+    {
+        unsigned short tempX;
+        short tempS;
+    } temperature;
+
+    temperature.tempX = getReg(temp_reg);
+    return (temperature.tempS / 256.0F);
 }
 
 //-------------------------------------------------------------------------------
 unsigned TempI2C_LM75::getReg(LM75Register reg)
 {
-    unsigned Result=0xFFFF;
+    unsigned Result = 0xFFFF;
 
 #ifdef DEBUG
     Serial.print("getReg"); Serial.println(uint8_t(reg),HEX);
